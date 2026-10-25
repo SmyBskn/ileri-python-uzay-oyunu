@@ -1,9 +1,10 @@
 """Hafta 5 dekoratör testleri."""
 
+from functools import lru_cache
 import pytest
 
 from ornekler import fibonacci_sayaclari
-from uzay_oyunu.dekoratorler import log_cagri, say, sinirla, sure_olc
+from uzay_oyunu.dekoratorler import hafiza, log_cagri, say, sinirla, sure_olc
 from uzay_oyunu.galaksi import galaksi_kur
 from uzay_oyunu.oyun import hedef_menusu, yakit_harca, yolculuk
 
@@ -100,6 +101,31 @@ def test_sinirla_aralik_disi(miktar):
         return 100 - miktar
     with pytest.raises(ValueError, match="yakit_harca"):
         yakit_harca(miktar)
+
+
+def test_hafiza_onbellek_ve_maxsize():
+    sayac = {"adet": 0}
+    @hafiza(maxsize=2)
+    def hesapla(x):
+        sayac["adet"] += 1
+        return x * x
+    assert hesapla(2) == 4
+    assert hesapla(2) == 4
+    assert sayac["adet"] == 1
+    hesapla(3)
+    hesapla(4)  # En eski anahtar (2) silinir.
+    hesapla(2)
+    assert sayac["adet"] == 4
+
+
+def test_hafiza_lru_cache_ile_ayni_sonuc():
+    @hafiza()
+    def kendi(x):
+        return x + 10
+    @lru_cache(maxsize=None)
+    def standart(x):
+        return x + 10
+    assert [kendi(i) for i in range(10)] == [standart(i) for i in range(10)]
 
 
 def test_yardimci_dekoratorlar_wraps():

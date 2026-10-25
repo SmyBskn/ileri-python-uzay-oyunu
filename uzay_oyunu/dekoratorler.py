@@ -1,8 +1,9 @@
 """Hafta 5 için dekoratörler."""
 
+from collections import OrderedDict
 from functools import wraps
 from time import perf_counter
-from typing import Callable, TypeVar, ParamSpec
+from typing import Any, Callable, TypeVar, ParamSpec
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -60,5 +61,31 @@ def sinirla(alt: int | float, ust: int | float) -> Callable[[Callable[P, R]], Ca
                     f"{func.__name__}: {deger} değeri {alt}-{ust} aralığında değil"
                 )
             return func(*args, **kwargs)
+        return wrapper
+    return dekorator
+
+
+def hafiza(maxsize: int | None = None) -> Callable[[Callable[P, R]], Callable[P, R]]:
+    """Sözlük tabanlı önbellek; maxsize verilirse en eski girdiyi siler."""
+    if maxsize is not None and maxsize < 0:
+        raise ValueError("maxsize negatif olamaz")
+
+    def dekorator(func: Callable[P, R]) -> Callable[P, R]:
+        cache: OrderedDict[tuple[Any, ...], R] = OrderedDict()
+
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            anahtar = (args, tuple(sorted(kwargs.items())))
+            if anahtar in cache:
+                cache.move_to_end(anahtar)
+                return cache[anahtar]
+            sonuc = func(*args, **kwargs)
+            if maxsize != 0:
+                cache[anahtar] = sonuc
+                if maxsize is not None and len(cache) > maxsize:
+                    cache.popitem(last=False)
+            return sonuc
+
+        wrapper.cache = cache  # type: ignore[attr-defined]
         return wrapper
     return dekorator
