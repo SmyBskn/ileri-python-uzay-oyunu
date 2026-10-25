@@ -3,6 +3,7 @@
 from .akis import yakit_gostergesi
 from .dekoratorler import log_cagri
 from .galaksi import galaksi_kur
+from .komutlar import KOMUTLAR
 
 
 @log_cagri
@@ -27,7 +28,7 @@ def hedef_sec(secim: str, hedefler: list[str]) -> str | None:
 
 
 def travel() -> None:
-    """Gezegen hedeflerini kabul eden oyun döngüsünü çalıştırır."""
+    """Komutları veya gezegen hedeflerini kabul eden oyun döngüsünü çalıştırır."""
     durum = galaksi_kur()
     gosterge = yakit_gostergesi(durum["yakit"], 5)
 
@@ -36,9 +37,15 @@ def travel() -> None:
         print(hedef_menusu(hedefler))
         secim = input("> ").strip().lower()
 
+        # Girdi bir komut adıysa komutu çalıştır, aynı menüyü tekrar göster.
+        if secim in KOMUTLAR:
+            fonksiyon, _aciklama = KOMUTLAR[secim]
+            print(fonksiyon(durum))
+            continue
+
         hedef = hedef_sec(secim, hedefler)
         if hedef is None:
-            print("Geçersiz seçim. Bir gezegen gir.")
+            print("Geçersiz seçim. Bir gezegen veya komut gir.")
             continue
 
         try:
