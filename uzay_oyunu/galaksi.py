@@ -1,6 +1,7 @@
 """Galaksi tanımları ve temel oyun durumu."""
 
 from typing import Any
+from .dekoratorler import log_cagri
 
 GALAKSI: dict[str, Any] = {
     "konum": "dünya",
@@ -19,6 +20,7 @@ GALAKSI: dict[str, Any] = {
 }
 
 
+@log_cagri
 def galaksi_kur() -> dict[str, Any]:
     """Yeni bir oyun için başlangıç galaksisi ve durum sözlüğü döndürür."""
     return {

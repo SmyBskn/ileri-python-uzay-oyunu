@@ -1,9 +1,11 @@
 """Basit uzay oyunu döngüsü."""
 
 from .akis import yakit_gostergesi
+from .dekoratorler import log_cagri
 from .galaksi import galaksi_kur
 
 
+@log_cagri
 def hedef_menusu(hedefler: list[str]) -> str:
     """Gidilebilecek gezegenleri numaralı bir menü metni olarak döndürür."""
     satirlar = ["Nereye gitmek istersin?"]

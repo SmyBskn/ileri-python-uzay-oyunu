@@ -29,3 +29,16 @@ def say(func: Callable[P, R]) -> Callable[P, R]:
         return func(*args, **kwargs)
     wrapper.cagri = 0  # type: ignore[attr-defined]
     return wrapper
+
+
+def log_cagri(func: Callable[P, R]) -> Callable[P, R]:
+    """Çağrıdan önce fonksiyon ve argümanları, sonra dönüş değerini yazdırır."""
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        parcalar = [repr(arg) for arg in args]
+        parcalar.extend(f"{ad}={deger!r}" for ad, deger in kwargs.items())
+        print(f"-> {func.__name__}({', '.join(parcalar)})")
+        sonuc = func(*args, **kwargs)
+        print(f"<- {func.__name__} = {sonuc!r}")
+        return sonuc
+    return wrapper

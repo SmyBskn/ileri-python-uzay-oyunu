@@ -1,7 +1,9 @@
 """Hafta 5 dekoratör testleri."""
 
 from ornekler import fibonacci_sayaclari
-from uzay_oyunu.dekoratorler import say, sure_olc
+from uzay_oyunu.dekoratorler import log_cagri, say, sure_olc
+from uzay_oyunu.galaksi import galaksi_kur
+from uzay_oyunu.oyun import hedef_menusu, yolculuk
 
 
 def test_sure_olc_sonucu_korur(capsys):
@@ -36,6 +38,34 @@ def test_say_cagri_sayar():
     assert iki_kat(3) == 6
     assert iki_kat(4) == 8
     assert iki_kat.cagri == 2
+
+
+def test_log_cagri(capsys):
+    @log_cagri
+    def selam(ad, *, resmi=False):
+        return f"Merhaba {ad}, resmi={resmi}"
+    assert selam("Ada", resmi=True) == "Merhaba Ada, resmi=True"
+    cikti = capsys.readouterr().out
+    assert "-> selam('Ada', resmi=True)" in cikti
+    assert "<- selam =" in cikti
+
+
+def test_log_cagri_ornek_cikti(capsys):
+    assert log_cagri(yolculuk)("orion", hiz=3) == "orion hiz=3"
+    assert capsys.readouterr().out == (
+        "-> yolculuk('orion', hiz=3)\n"
+        "<- yolculuk = 'orion hiz=3'\n"
+    )
+
+
+def test_log_cagri_oyun_fonksiyonlarini_bozmaz(capsys):
+    assert galaksi_kur.__name__ == "galaksi_kur"
+    assert hedef_menusu.__name__ == "hedef_menusu"
+    assert galaksi_kur()["konum"] == "dünya"
+    assert hedef_menusu(["orion", "sirius"]) == "Nereye gitmek istersin?\n[1] orion\n[2] sirius"
+    cikti = capsys.readouterr().out
+    assert "-> galaksi_kur()" in cikti
+    assert "-> hedef_menusu(['orion', 'sirius'])" in cikti
 
 
 def test_fib_dekorator_sirasi():
