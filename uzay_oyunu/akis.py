@@ -1,6 +1,7 @@
 """Hafta 4 yönergesindeki üreteçler ve rota hesabı."""
 
 from functools import lru_cache
+from time import perf_counter
 from typing import Callable, Iterable, Iterator
 
 
@@ -76,3 +77,18 @@ def uzun_yolculuklar(
     for kayit in kayitlar:
         if kayit[2] > esik:
             yield kayit
+
+
+def zamanlayici(aralik: float) -> Iterator[bool]:
+    """Her kontrolde, son tetiklemeden bu yana `aralik` saniye geçti mi diye üretir.
+
+    Bonus görev: üreteç durmadan saati kontrol eder (meşgul bekleme).
+    """
+    son = perf_counter()
+    while True:
+        simdi = perf_counter()
+        if simdi - son >= aralik:
+            son += aralik
+            yield True
+        else:
+            yield False

@@ -13,6 +13,7 @@ from uzay_oyunu.akis import (
     satirlari_oku,
     uzun_yolculuklar,
     yakit_gostergesi,
+    zamanlayici,
 )
 from uzay_oyunu.galaksi import galaksi_kur
 from uzay_oyunu.oyun import travel
@@ -106,3 +107,10 @@ def test_rota_sayaci_onbellek_kullanir():
     bilgi = say.cache_info()
     assert bilgi.hits > 0
     assert bilgi.currsize <= 5 * 21  # en fazla (gezegen, adim) çifti kadar
+
+
+# --- Bonus: zamanlayıcı ---
+
+def test_zamanlayici_aralik_dolmadan_false():
+    z = zamanlayici(60)
+    assert next(z) is False
