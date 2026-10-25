@@ -1,4 +1,4 @@
-"""Hafta 4 rota ölçümünü çalıştırır.
+"""Hafta 4 rota ölçümünü ve Hafta 5 dekoratör örneklerini çalıştırır.
 
 Çalıştırma: uv run python ornekler.py
 """
@@ -6,6 +6,7 @@
 from time import perf_counter
 
 from uzay_oyunu.akis import rota_sayaci, rota_sayaci_onbelleksiz
+from uzay_oyunu.dekoratorler import sure_olc
 from uzay_oyunu.galaksi import galaksi_kur
 
 
@@ -27,6 +28,12 @@ def rota_olcumleri(adim: int = 20) -> None:
     print(f"Önbellekli  adim={adim}: {sure2:.6f} sn (sonuç: {sonuc2})")
     print(f"Hızlanma: yaklaşık {sure1 / sure2:,.0f} kat")
     print(onbellekli.cache_info())  # type: ignore[attr-defined]
+
+    # Hafta 5 Görev 1: aynı ölçüm sure_olc dekoratörüyle. Dekoratörü iç
+    # fonksiyona değil dıştaki çağrıya uyguluyoruz; yoksa her özyinelemeli
+    # çağrı için ayrı bir satır yazdırılırdı.
+    print("sure_olc ile:")
+    sure_olc(rota_sayaci_onbelleksiz(baglantilar))("dünya", adim)
 
 
 if __name__ == "__main__":
