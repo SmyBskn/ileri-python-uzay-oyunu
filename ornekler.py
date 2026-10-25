@@ -3,11 +3,34 @@
 Çalıştırma: uv run python ornekler.py
 """
 
+from functools import lru_cache
 from time import perf_counter
 
 from uzay_oyunu.akis import rota_sayaci, rota_sayaci_onbelleksiz
-from uzay_oyunu.dekoratorler import sure_olc
+from uzay_oyunu.dekoratorler import say, sure_olc
 from uzay_oyunu.galaksi import galaksi_kur
+
+
+def fibonacci_sayaclari() -> tuple[int, int, int]:
+    """fib(20) için üç dekoratör sırasının çağrı sayılarını döndürür."""
+    @say
+    def fib1(n: int) -> int:
+        return n if n < 2 else fib1(n - 1) + fib1(n - 2)
+
+    @say
+    @lru_cache(maxsize=None)
+    def fib2(n: int) -> int:
+        return n if n < 2 else fib2(n - 1) + fib2(n - 2)
+
+    @lru_cache(maxsize=None)
+    @say
+    def fib3(n: int) -> int:
+        return n if n < 2 else fib3(n - 1) + fib3(n - 2)
+
+    fib1(20)
+    fib2(20)
+    fib3(20)
+    return fib1.cagri, fib2.cagri, fib3.__wrapped__.cagri  # type: ignore[attr-defined]
 
 
 def rota_olcumleri(adim: int = 20) -> None:
@@ -39,3 +62,9 @@ def rota_olcumleri(adim: int = 20) -> None:
 if __name__ == "__main__":
     print("== Hafta 4 Görev 4: rota sayacı ==")
     rota_olcumleri()
+    print()
+    print("== Hafta 5 Görev 2: fib(20) çağrı sayıları ==")
+    yalniz, say_ustte, cache_ustte = fibonacci_sayaclari()
+    print(f"Yalnızca @say : {yalniz}")
+    print(f"@say üstte, @lru_cache altta: {say_ustte}")
+    print(f"@lru_cache üstte, @say altta: {cache_ustte}")

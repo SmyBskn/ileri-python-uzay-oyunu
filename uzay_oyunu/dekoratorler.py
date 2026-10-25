@@ -19,3 +19,13 @@ def sure_olc(func: Callable[P, R]) -> Callable[P, R]:
             sure = perf_counter() - baslangic
             print(f"{func.__name__}: {sure:.4f} sn")
     return wrapper
+
+
+def say(func: Callable[P, R]) -> Callable[P, R]:
+    """Fonksiyonun sarmalayıcı üzerinden kaç kez çağrıldığını niteliğinde tutar."""
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        wrapper.cagri += 1  # type: ignore[attr-defined]
+        return func(*args, **kwargs)
+    wrapper.cagri = 0  # type: ignore[attr-defined]
+    return wrapper
