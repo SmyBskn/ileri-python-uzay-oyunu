@@ -42,3 +42,23 @@ def log_cagri(func: Callable[P, R]) -> Callable[P, R]:
         print(f"<- {func.__name__} = {sonuc!r}")
         return sonuc
     return wrapper
+
+
+def sinirla(alt: int | float, ust: int | float) -> Callable[[Callable[P, R]], Callable[P, R]]:
+    """İlk argümanı belirtilen kapalı aralıkta değilse ValueError verir."""
+    def dekorator(func: Callable[P, R]) -> Callable[P, R]:
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            if args:
+                deger = args[0]
+            elif func.__code__.co_varnames[0] in kwargs:
+                deger = kwargs[func.__code__.co_varnames[0]]
+            else:
+                raise TypeError(f"{func.__name__} ilk argümanını almalıdır")
+            if not alt <= deger <= ust:
+                raise ValueError(
+                    f"{func.__name__}: {deger} değeri {alt}-{ust} aralığında değil"
+                )
+            return func(*args, **kwargs)
+        return wrapper
+    return dekorator

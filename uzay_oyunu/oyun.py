@@ -1,7 +1,7 @@
 """Basit uzay oyunu döngüsü."""
 
 from .akis import yakit_gostergesi
-from .dekoratorler import log_cagri
+from .dekoratorler import log_cagri, sinirla
 from .galaksi import galaksi_kur
 from .komutlar import KOMUTLAR
 
@@ -17,6 +17,12 @@ def hedef_menusu(hedefler: list[str]) -> str:
 def yolculuk(hedef: str, hiz: int = 1) -> str:
     """Yolculuğu özetleyen kısa metni döndürür."""
     return f"{hedef} hiz={hiz}"
+
+
+@sinirla(0, 100)
+def yakit_harca(miktar: int) -> int:
+    """Belirtilen miktarda yakıt harcar ve kalan yakıtı döndürür."""
+    return 100 - miktar
 
 
 def hedef_sec(secim: str, hedefler: list[str]) -> str | None:

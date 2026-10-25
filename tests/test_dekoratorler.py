@@ -1,9 +1,11 @@
 """Hafta 5 dekoratör testleri."""
 
+import pytest
+
 from ornekler import fibonacci_sayaclari
-from uzay_oyunu.dekoratorler import log_cagri, say, sure_olc
+from uzay_oyunu.dekoratorler import log_cagri, say, sinirla, sure_olc
 from uzay_oyunu.galaksi import galaksi_kur
-from uzay_oyunu.oyun import hedef_menusu, yolculuk
+from uzay_oyunu.oyun import hedef_menusu, yakit_harca, yolculuk
 
 
 def test_sure_olc_sonucu_korur(capsys):
@@ -70,6 +72,34 @@ def test_log_cagri_oyun_fonksiyonlarini_bozmaz(capsys):
 
 def test_fib_dekorator_sirasi():
     assert fibonacci_sayaclari() == (21891, 39, 21)
+
+
+def test_oyundaki_yakit_harca():
+    assert yakit_harca(30) == 70
+    assert yakit_harca(0) == 100
+    assert yakit_harca(100) == 0
+    with pytest.raises(ValueError, match="^yakit_harca: 150 değeri 0-100 aralığında değil$"):
+        yakit_harca(150)
+    with pytest.raises(ValueError):
+        yakit_harca(-1)
+    assert yakit_harca.__name__ == "yakit_harca"
+
+
+def test_sinirla_sinir_degerleri():
+    @sinirla(0, 100)
+    def yakit_harca(miktar):
+        return 100 - miktar
+    assert yakit_harca(0) == 100
+    assert yakit_harca(100) == 0
+
+
+@pytest.mark.parametrize("miktar", [-1, 101, 150])
+def test_sinirla_aralik_disi(miktar):
+    @sinirla(0, 100)
+    def yakit_harca(miktar):
+        return 100 - miktar
+    with pytest.raises(ValueError, match="yakit_harca"):
+        yakit_harca(miktar)
 
 
 def test_yardimci_dekoratorlar_wraps():
