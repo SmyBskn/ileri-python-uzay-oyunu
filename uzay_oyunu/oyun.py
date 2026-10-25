@@ -1,5 +1,6 @@
 """Basit uzay oyunu döngüsü."""
 
+from .akis import yakit_gostergesi
 from .galaksi import galaksi_kur
 
 
@@ -26,6 +27,7 @@ def hedef_sec(secim: str, hedefler: list[str]) -> str | None:
 def travel() -> None:
     """Gezegen hedeflerini kabul eden oyun döngüsünü çalıştırır."""
     durum = galaksi_kur()
+    gosterge = yakit_gostergesi(durum["yakit"], 5)
 
     while True:
         hedefler = durum["baglantilar"].get(durum["konum"], [])
@@ -37,5 +39,11 @@ def travel() -> None:
             print("Geçersiz seçim. Bir gezegen gir.")
             continue
 
+        try:
+            durum["yakit"] = next(gosterge)
+        except StopIteration:
+            print("Yakıtın bitti, uzayda sürükleniyorsun…")
+            break
+
         durum["konum"] = hedef
-        print(f"{hedef} gezegenine ulaştın.")
+        print(f"{hedef} gezegenine ulaştın. Kalan yakıt: {durum['yakit']}")
