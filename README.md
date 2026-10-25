@@ -1,6 +1,6 @@
 # İleri Python Programlama – Uzay Oyunu (Hafta 4 ve Hafta 5 Lab)
 
-Öğrenci: Sümeyye Başeken · Numara: 20253005012 · GitHub: ____________________
+Öğrenci: Sümeyye Başeken · Numara: 20253005012 · GitHub: https://github.com/SmyBskn/ileri-python-uzay-oyunu
 
 ## Kurulum ve çalıştırma
 
