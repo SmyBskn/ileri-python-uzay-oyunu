@@ -1,6 +1,7 @@
 """Hafta 4 yönergesindeki üreteçler ve rota hesabı."""
 
-from typing import Iterable, Iterator
+from functools import lru_cache
+from typing import Callable, Iterable, Iterator
 
 
 def fibonacci() -> Iterator[int]:
@@ -18,6 +19,37 @@ def yakit_gostergesi(yakit: int, tuketim: int) -> Iterator[int]:
     while yakit > 0:
         yakit = max(0, yakit - tuketim)
         yield yakit
+
+
+def rota_sayaci(baglantilar: dict[str, list[str]]) -> Callable[[str, int], int]:
+    """Verilen bağlantılar için önbellekli rota sayma fonksiyonunu döndürür.
+
+    Önbellek iç fonksiyonda durur; böylece her galaksinin kendi önbelleği olur
+    ve özyinelemeli çağrılar da önbellekten geçer.
+    """
+    @lru_cache(maxsize=None)
+    def rota_sayisi(gezegen: str, adim: int) -> int:
+        """Gezegenden başlayıp tam adim yolculuk yapan rotaları sayar."""
+        if adim == 0:
+            return 1
+        return sum(
+            rota_sayisi(komsu, adim - 1)
+            for komsu in baglantilar.get(gezegen, [])
+        )
+    return rota_sayisi
+
+
+def rota_sayaci_onbelleksiz(baglantilar: dict[str, list[str]]) -> Callable[[str, int], int]:
+    """Karşılaştırma amacıyla önbelleksiz rota sayma fonksiyonunu döndürür."""
+    def rota_sayisi(gezegen: str, adim: int) -> int:
+        """Gezegenden başlayıp tam adim yolculuk yapan rotaları sayar."""
+        if adim == 0:
+            return 1
+        return sum(
+            rota_sayisi(komsu, adim - 1)
+            for komsu in baglantilar.get(gezegen, [])
+        )
+    return rota_sayisi
 
 
 def satirlari_oku(yol: str) -> Iterator[str]:

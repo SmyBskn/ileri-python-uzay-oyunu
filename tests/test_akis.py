@@ -9,10 +9,12 @@ import pytest
 from uzay_oyunu.akis import (
     ayristir,
     fibonacci,
+    rota_sayaci,
     satirlari_oku,
     uzun_yolculuklar,
     yakit_gostergesi,
 )
+from uzay_oyunu.galaksi import galaksi_kur
 from uzay_oyunu.oyun import travel
 
 SEYIR = str(Path(__file__).resolve().parent.parent / "veri" / "seyir.txt")
@@ -89,3 +91,18 @@ def test_satirlari_oku_yorum_ve_bos_satirlari_atlar():
     satirlar = list(satirlari_oku(SEYIR))
     assert len(satirlar) == 6
     assert not any(s.startswith("#") or not s for s in satirlar)
+
+
+# --- Görev 4: Önbellekli rota sayacı ---
+
+def test_rota_sayaci_ornek_degerler():
+    say = rota_sayaci(galaksi_kur()["baglantilar"])
+    assert (say("dünya", 3), say("dünya", 10), say("dünya", 40)) == (9, 2185, 16832258606399)
+
+
+def test_rota_sayaci_onbellek_kullanir():
+    say = rota_sayaci(galaksi_kur()["baglantilar"])
+    say("dünya", 20)
+    bilgi = say.cache_info()
+    assert bilgi.hits > 0
+    assert bilgi.currsize <= 5 * 21  # en fazla (gezegen, adim) çifti kadar
