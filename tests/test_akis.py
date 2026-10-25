@@ -1,11 +1,21 @@
 """Üreteçler, boru hattı ve rota sayacı testleri."""
 
 from itertools import islice, takewhile
+from pathlib import Path
+from types import GeneratorType
 
 import pytest
 
-from uzay_oyunu.akis import fibonacci, yakit_gostergesi
+from uzay_oyunu.akis import (
+    ayristir,
+    fibonacci,
+    satirlari_oku,
+    uzun_yolculuklar,
+    yakit_gostergesi,
+)
 from uzay_oyunu.oyun import travel
+
+SEYIR = str(Path(__file__).resolve().parent.parent / "veri" / "seyir.txt")
 
 
 # --- Görev 1: Fibonacci ---
@@ -51,3 +61,31 @@ def test_travel_yakit_bitince_oyun_biter(monkeypatch, capsys):
     cikti = capsys.readouterr().out
     assert "Kalan yakıt: 0" in cikti
     assert cikti.rstrip().endswith("Yakıtın bitti, uzayda sürükleniyorsun…")
+
+
+# --- Görev 3: Seyir defteri boru hattı ---
+
+def test_seyir_toplam_yakit():
+    assert sum(y for _, _, y in ayristir(satirlari_oku(SEYIR))) == 88
+
+
+def test_seyir_uzun_yolculuklar():
+    kayitlar = ayristir(satirlari_oku(SEYIR))
+    assert [h for _, h, _ in uzun_yolculuklar(kayitlar, 10)] == [
+        "sirius", "centauri", "orion", "kara_delik"
+    ]
+
+
+def test_boru_hatti_tembel():
+    # Hiçbir aşama liste döndürmez; hepsi üreteçtir.
+    satirlar = satirlari_oku(SEYIR)
+    kayitlar = ayristir(satirlar)
+    uzunlar = uzun_yolculuklar(kayitlar, 10)
+    assert all(isinstance(a, GeneratorType) for a in (satirlar, kayitlar, uzunlar))
+    assert next(uzunlar) == ("dünya", "sirius", 12)
+
+
+def test_satirlari_oku_yorum_ve_bos_satirlari_atlar():
+    satirlar = list(satirlari_oku(SEYIR))
+    assert len(satirlar) == 6
+    assert not any(s.startswith("#") or not s for s in satirlar)
